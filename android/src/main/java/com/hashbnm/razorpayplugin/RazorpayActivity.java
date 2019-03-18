@@ -15,7 +15,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RazorpayActivity extends Activity implements PaymentResultListener {
+public class RazorpayActivity extends Activity implements PaymentResultWithDataListener{
     private static final String TAG = RazorpayActivity.class.getSimpleName();
     public static String EXTRA_PRODUCT_NAME = "name";
     public static String EXTRA_PRODUCT_IMAGE = "image";
@@ -90,10 +90,17 @@ public class RazorpayActivity extends Activity implements PaymentResultListener 
      */
     @SuppressWarnings("unused")
     @Override
-    public void onPaymentSuccess(String razorpayPaymentID) {
+    public void onPaymentSuccess(String razorpayPaymentID,PaymentData newData) {
         try {
+             String paymentId = newData.getPaymentId();
+             String signature = newData.getSignature();
+             String orderId = newData.getOrderId();
             Intent data = new Intent();
-            data.putExtra(PAYMENT_ID, razorpayPaymentID);
+           data.putExtra(PAYMENT_ID, razorpayPaymentID);
+            data.putExtra(ORDER_ID, orderId);
+             data.putExtra(SIGNATURE, signature);
+              data.putExtra(NEWPAYID, paymentId);
+            data.putExtra
             setResult(Activity.RESULT_OK, data);
             finish();
         } catch (Exception e) {
@@ -108,7 +115,7 @@ public class RazorpayActivity extends Activity implements PaymentResultListener 
      */
     @SuppressWarnings("unused")
     @Override
-    public void onPaymentError(int code, String response) {
+    public void onPaymentError(int code, String response, PaymentData data) {
         try {
             Intent data = new Intent();
             data.putExtra(PAYMENT_ID, response);
