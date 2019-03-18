@@ -27,6 +27,8 @@ public class RazorpayActivity extends Activity implements PaymentResultWithDataL
     public static String EXTRA_PREFILL_CONTACT = "contact";
     public static String PAYMENT_ID = "payment_id";
     public static String RAZORPAY_KEY = "api_key";
+    public static String RAZORPAY_APIKEY = "key";
+
 
 
     @Override
@@ -37,7 +39,27 @@ public class RazorpayActivity extends Activity implements PaymentResultWithDataL
         Checkout.preload(getApplicationContext());
         startPayment(intent);
     }
+    
 
+public void startOrder(Intent intent) {
+ RazorpayClient razorpay = new RazorpayClient(intent.getStringExtra(RAZORPAY_KEY), intent.getStringExtra(RAZORPAY_APIKEY));
+try {
+  JSONObject orderRequest = new JSONObject();
+  orderRequest.put("amount", intent.getStringExtra(EXTRA_PRODUCT_AMOUNT)); // amount in paise
+  orderRequest.put("currency", "INR");
+  orderRequest.put("receipt", "test_1");
+  orderRequest.put("payment_capture", true);
+
+  Order order = razorpay.Orders.create(orderRequest);
+} catch (RazorpayException e) {
+  // Handle Exception
+ Toast.makeText(activity, "Error in making order: " + e.getMessage(), Toast.LENGTH_SHORT)
+                    .show();
+            e.printStackTrace();
+}
+
+}
+    
     public void startPayment(Intent intent) {
         /*
           You need to pass current activity in order to let Razorpay create CheckoutActivity
